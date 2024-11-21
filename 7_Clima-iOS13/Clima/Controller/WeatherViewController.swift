@@ -12,7 +12,6 @@ import CoreLocation
 class WeatherViewController: UIViewController {
 
     @IBOutlet weak var conditionImageView: UIImageView!
-    @IBOutlet weak var background: UIImageView!
     @IBOutlet weak var temperatureLabel: UILabel!
     @IBOutlet weak var cityLabel: UILabel!
     @IBOutlet weak var searchField: UITextField!
@@ -29,8 +28,8 @@ class WeatherViewController: UIViewController {
         weatherManager.delegate = self
         searchField.delegate = self
     }
-    
-    
+
+
 }
  
 //MARK:- TextField extension
@@ -48,7 +47,6 @@ extension WeatherViewController: UITextFieldDelegate {
                 weatherManager.fetchWeather(cityName)
             }
         }
-        
         
         // when keyboard return clicked
         func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -84,14 +82,6 @@ extension WeatherViewController: WeatherManagerDelegate {
             temperatureLabel.text = weatherModel.temperatureString
             cityLabel.text = weatherModel.cityName
             self.conditionImageView.image = UIImage(systemName: weatherModel.conditionName)
-            switch cityLabel.text {
-                case "Tokyo":
-                    //Tokyoの場合はTokyoの画像
-                    background.image = UIImage(named: "Tokyo")
-                default:
-                    //その他の場合はデフォルトの画像
-                    background.image = UIImage(named: "background")
-            }
         }
     }
     
