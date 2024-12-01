@@ -15,6 +15,7 @@ class WeatherViewController: UIViewController {
     @IBOutlet weak var temperatureLabel: UILabel!
     @IBOutlet weak var cityLabel: UILabel!
     @IBOutlet weak var searchField: UITextField!
+    @IBOutlet weak var background: UIImageView!
     
     
     //MARK: Properties
@@ -51,7 +52,7 @@ extension WeatherViewController: UITextFieldDelegate {
         // when keyboard return clicked
         func textFieldShouldReturn(_ textField: UITextField) -> Bool {
             searchField.endEditing(true)    //dismiss keyboard
-            print(searchField.text!)
+            print("action: search, city: \(searchField.text!)")
             
             searchWeather()
             return true
@@ -82,6 +83,12 @@ extension WeatherViewController: WeatherManagerDelegate {
             temperatureLabel.text = weatherModel.temperatureString
             cityLabel.text = weatherModel.cityName
             self.conditionImageView.image = UIImage(systemName: weatherModel.conditionName)
+            switch weatherModel.cityName {
+            case "Tokyo":
+                background.image = UIImage(named: "Tokyo")
+            default:
+                background.image = UIImage(named: "background")
+            }
         }
     }
     
