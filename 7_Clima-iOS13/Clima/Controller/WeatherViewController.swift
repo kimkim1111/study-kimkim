@@ -16,7 +16,11 @@ class WeatherViewController: UIViewController {
     @IBOutlet weak var cityLabel: UILabel!
     @IBOutlet weak var searchField: UITextField!
     @IBOutlet weak var background: UIImageView!
-    
+    @IBOutlet weak var JokeButton: UIButton!
+    @IBOutlet weak var jokeLabel: UILabel!
+    @IBAction func JokeButtonTapped(_ sender: UIButton) {
+        fetchDadJoke()
+    }
     
     //MARK: Properties
     var weatherManager = WeatherDataManager()
@@ -28,6 +32,7 @@ class WeatherViewController: UIViewController {
         locationManager.delegate = self
         weatherManager.delegate = self
         searchField.delegate = self
+        jokeLabel.text = "Press the button to get a joke!"
     }
 
 
@@ -42,6 +47,62 @@ extension WeatherViewController: UITextFieldDelegate {
             
             searchWeather()
         }
+        
+        func fetchDadJoke() {
+        // APIのURL
+        let url = URL(string: "https://icanhazdadjoke.com/")!
+        
+        // URLリクエストを作成
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+            // JSON形式をリクエスト
+
+        // ネットワークリクエストを送信
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            // エラーチェック
+            if let error = error {
+                print("Error fetching joke: \(error)")
+                DispatchQueue.main.async {
+                    self.jokeLabel.text = "Failed to fetch joke. Try again!"
+                }
+                return
+            }
+
+            // データ確認
+            guard let data = data else {
+                print("No data returned")
+                DispatchQueue.main.async {
+                    self.jokeLabel.text = "No joke found. Try again!"
+                }
+                return
+            }
+
+            // JSONをデコード
+            do {
+                if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+                   let joke = json["joke"] as? String {
+                    // メインスレッドでUIを更新
+                    DispatchQueue.main.async {
+                        self.jokeLabel.text = joke
+                        print(joke)
+                    }
+                } else {
+                    print("Unexpected JSON structure")
+                }
+            } catch {
+                print("Failed to decode JSON: \(error)")
+                DispatchQueue.main.async {
+                    self.jokeLabel.text = "Error decoding joke. Try again!"
+                }
+            }
+        }
+
+        // リクエストを開始
+        task.resume()
+        }
+
+        
     
         func searchWeather(){
             if let cityName = searchField.text{
